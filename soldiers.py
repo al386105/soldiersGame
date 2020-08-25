@@ -71,7 +71,7 @@ class Infantry(Soldier):
         PICTURE_SELECTED = "pictures/soldier_selected.png"
         HEALTH = 100
         DAMAGE = 20
-        SHOOTING_DISTANCE = 15
+        SHOOTING_DISTANCE = 5
         ACCURACY = 60
         MOVING_DISTANCE = 10
         EXPLORING_RANGE = 5
