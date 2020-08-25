@@ -1,0 +1,9 @@
+class Soldier:
+    position = corresponde a las coordenadas de la matriz!
+    picture = corresponde a la imagen del personaje
+    heatlh = vida del soldado
+    damage = daño que realiza
+    shooting_distance = alcance maximo del soldado
+    moving_distance = distancia maxima de movimiento por turno
+    accuraccy = probabilidad de disparo acertado
+    exploring_range = radio de visibilidad que proporiciona al jugador del mapa
