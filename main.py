@@ -88,14 +88,14 @@ def run_game():
                     move_down(selected_soldier)
                 elif event.key == pygame.K_SPACE and selected_soldier is not None:
                     print(map)
-                elif event.key == pygame.K_w:
-                    pass
-                elif event.key == pygame.K_a:
-                    pass
-                elif event.key == pygame.K_d:
-                    pass
-                elif event.key == pygame.K_s:
-                    pass
+                elif event.key == pygame.K_w and selected_soldier is not None:
+                    shot_up(selected_soldier)
+                elif event.key == pygame.K_a and selected_soldier is not None:
+                    shot_left(selected_soldier)
+                elif event.key == pygame.K_d and selected_soldier is not None:
+                    shot_right(selected_soldier)
+                elif event.key == pygame.K_s and selected_soldier is not None:
+                    shot_down(selected_soldier)
         # Dibujamos los jugadores y los enemigos
         for soldier in soldiers:
             if selected_soldier is not None and selected_soldier == soldier:
