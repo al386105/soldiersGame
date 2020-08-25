@@ -1,7 +1,7 @@
 import pygame
 import sys
 from soldiers import Infantry, Enemy
-import random
+from shot import Shot, Direction
 from map import Map
 
 # CONSTANTES
@@ -16,6 +16,7 @@ SCREEN_HEIGTH = 650
 
 soldiers = []
 enemies = []
+shots = []
 
 def move_left(soldier):
     map_matrix = map.get_map_matrix()
@@ -49,16 +50,25 @@ def move_down(soldier):
         map_matrix[soldier.get_position()[0]][soldier.get_position()[1]] = 1
 
 def shot_right(soldier):
-    pass
+    # TODO: Comprobar que el disparo sea certero! (accuracy)
+    shot_position = soldier.get_position().copy()
+    shot = Shot(shot_position, Direction.RIGHT, soldier.get_shooting_distance(), soldier.get_damage())
+    shots.append(shot)
 
 def shot_left(soldier):
-    pass
+    shot_position = soldier.get_position().copy()
+    shot = Shot(shot_position, Direction.LEFT, soldier.get_shooting_distance(), soldier.get_damage())
+    shots.append(shot)
 
 def shot_up(soldier):
-    pass
+    shot_position = soldier.get_position().copy()
+    shot = Shot(shot_position, Direction.UP, soldier.get_shooting_distance(), soldier.get_damage())
+    shots.append(shot)
 
 def shot_down(soldier):
-    pass
+    shot_position = soldier.get_position().copy()
+    shot = Shot(shot_position, Direction.DOWN, soldier.get_shooting_distance(), soldier.get_damage())
+    shots.append(shot)
 
 def run_game():
 
@@ -96,6 +106,7 @@ def run_game():
                     shot_right(selected_soldier)
                 elif event.key == pygame.K_s and selected_soldier is not None:
                     shot_down(selected_soldier)
+
         # Dibujamos los jugadores y los enemigos
         for soldier in soldiers:
             if selected_soldier is not None and selected_soldier == soldier:
@@ -105,6 +116,10 @@ def run_game():
         for enemy in enemies:
 
             screen.blit(enemy.get_picture(), (enemy.get_position()[0] * 20, enemy.get_position()[1] * 20))
+
+        for shot in shots:
+            shot.move_forward(1)
+            screen.blit(shot.get_picture(), (shot.get_position()[0] * 20, shot.get_position()[1] * 20))
 
         pygame.display.update()
 
