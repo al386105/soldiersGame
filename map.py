@@ -42,9 +42,9 @@ class Map:
 
     def generate_soldiers(self, soldiers_list):
         n = 0
-        while n < 5:
-            i = random.randint(1, rows // 2)
-            j = random.randint(1, columns // 2)
+        while n < 1:
+            i = random.randint(1, rows // 4)
+            j = random.randint(1, columns -1)
             if self.map[i][j] == 0:  # Posicion libre:
                 self.map[i][j] = 1
                 n += 1
@@ -53,9 +53,9 @@ class Map:
 
     def generate_enemies(self, enemies_list):
         n = 0
-        while n < 5:
-            i = random.randint(rows // 2, rows - 1)
-            j = random.randint(columns // 2, columns - 1)
+        while n < 1:
+            i = random.randint(rows - (rows // 4), rows - 1)
+            j = random.randint(1 , columns - 1)
             if self.map[i][j] == 0:  # Posicion libre:
                 self.map[i][j] = 1
                 n += 1
