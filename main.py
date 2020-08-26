@@ -138,7 +138,7 @@ def run_game():
                         move(selected_soldier, Direction.UP)
                     elif event.key == pygame.K_DOWN and selected_soldier is not None:
                         move(selected_soldier, Direction.DOWN)
-                    elif event.key == pygame.K_SPACE and selected_soldier is not None:
+                    elif event.key == pygame.K_SPACE:
                         change_turn()
                     elif event.key == pygame.K_w and selected_soldier is not None:
                         create_shot(selected_soldier, Direction.UP)
