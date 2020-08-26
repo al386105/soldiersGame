@@ -42,7 +42,7 @@ class Map:
 
     def generate_soldiers(self, soldiers_list):
         n = 0
-        while n < 1:
+        while n < 2:
             i = random.randint(1, rows // 4)
             j = random.randint(1, columns -1)
             if self.map[i][j] == 0:  # Posicion libre:
@@ -53,7 +53,7 @@ class Map:
 
     def generate_enemies(self, enemies_list):
         n = 0
-        while n < 1:
+        while n < 2:
             i = random.randint(rows - (rows // 4), rows - 1)
             j = random.randint(1 , columns - 1)
             if self.map[i][j] == 0:  # Posicion libre:
@@ -71,3 +71,12 @@ class Map:
                 if soldier.get_position()[0] == i and soldier.get_position()[1] == j:
                     return soldier
             return None
+
+    # Devuelve el estado (valor) de la posicion indicada
+    def get_state_position(self, position):
+        return self.map[position[0]][position[1]]
+
+    # Modifica el estado (valor) de la posicion indicada
+    def set_state_position(self, position, value):
+        self.map[position[0]][position[1]] = value
+

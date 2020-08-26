@@ -1,4 +1,5 @@
 import pygame
+from shot import Direction
 
 WHITE = (255, 255, 255)
 
@@ -50,23 +51,27 @@ class Soldier:
     def get_exploring_range(self):
         return self.exploring_range
 
-    def move(self, new_position):
-        self.position = new_position
+    def get_next_position(self, direction):
+        position_copied = self.position.copy()
+        if direction == Direction.DOWN:
+            position_copied[1] += 1
+        elif direction == Direction.UP:
+            position_copied[1] -= 1
+        elif direction == Direction.RIGHT:
+            position_copied[0] += 1
+        else:
+            position_copied[0] -= 1
+        return position_copied
 
-    def move_left(self, distance):
-        self.position[0] -= distance
-        self.distance_traveled += distance
-
-    def move_right(self, distance):
-        self.position[0] += distance
-        self.distance_traveled += distance
-
-    def move_up(self, distance):
-        self.position[1] -= distance
-        self.distance_traveled += distance
-
-    def move_down(self, distance):
-        self.position[1] += distance
+    def move(self, distance, direction):
+        if direction == Direction.DOWN:
+            self.position[1] += distance
+        elif direction == Direction.UP:
+            self.position[1] -= distance
+        elif direction == Direction.RIGHT:
+            self.position[0] += distance
+        else:
+            self.position[0] -= distance
         self.distance_traveled += distance
 
     def damage(self, damage):
