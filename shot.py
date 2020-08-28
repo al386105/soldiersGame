@@ -57,6 +57,7 @@ class Shot:
             self.position[0] -= distance
         self.distance_traveled += 1
 
+
 class Impact:
     def __init__(self, position, direction):
         self.position = position

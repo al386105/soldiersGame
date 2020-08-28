@@ -2,7 +2,6 @@ import pygame
 import sys
 from shot import Shot, Direction, Impact
 from map import Map
-import random
 
 # CONSTANTES
 RED = (255, 0, 0)
@@ -14,7 +13,7 @@ SCREEN_WIDTH = 1200
 SCREEN_HEIGTH = 650
 PICTURES_SIZE = 20
 
-soldiers = []
+players = []
 enemies = []
 shots = []
 impacts = []
@@ -56,26 +55,23 @@ def change_turn():
         turn_enemy = True
 
 
-def enemy_move():
+def enemy_turn():
     for enemy in enemies:
-        for i in range(0, enemy.get_max_moving_distance()):
-            nearest_soldier = get_nearest_soldier(enemy.get_position(), soldiers)
-            if nearest_soldier is not None:
-                direction = get_direction(enemy, nearest_soldier)
-                if in_range(enemy, nearest_soldier):
-                    create_shot(enemy, direction)
-                else:
-                    move(enemy, direction)
+        nearest_soldier = get_nearest_player(enemy.get_position(), players)
+        if nearest_soldier is not None:
+            moving_direction = get_direction(enemy, nearest_soldier)
+            if in_range(enemy, nearest_soldier):
+                shot_direction = get_shot_direction(enemy, nearest_soldier)
+                create_shot(enemy, shot_direction)
             else:
-                print("F")
-
+                move(enemy, moving_direction)
     change_turn()
 
 
-def get_nearest_soldier(position, soldiers_list):
+def get_nearest_player(position, players_list):
     nearest = None
     nearest_distance = 200
-    for soldier in soldiers_list:
+    for soldier in players_list:
         distance = abs(position[0] - soldier.get_position()[0]) + abs(position[1] - soldier.get_position()[1])
         if distance < nearest_distance:
             nearest = soldier
@@ -83,33 +79,91 @@ def get_nearest_soldier(position, soldiers_list):
     return nearest
 
 
-def in_range(enemy, soldier):
-    n = enemy.get_shooting_distance()
-    if (enemy.get_position()[0] - soldier.get_position()[0] in range(-n, n)
-            and enemy.get_position()[1] - soldier.get_position()[1] == 0) \
-            or (enemy.get_position()[0] - soldier.get_position()[0] == 0
-            and enemy.get_position()[1] - soldier.get_position()[1] in range(-n, n)):
+def in_range(from_soldier, to_soldier):
+    n = from_soldier.get_shooting_distance()
+    if (from_soldier.get_position()[0] - to_soldier.get_position()[0] in range(-n, n)
+        and from_soldier.get_position()[1] - to_soldier.get_position()[1] == 0) \
+            or (from_soldier.get_position()[0] - to_soldier.get_position()[0] == 0
+                and from_soldier.get_position()[1] - to_soldier.get_position()[1] in range(-n, n)):
         return True
     return False
 
 
-def get_direction(enemy, soldier):
-    # TODO: mejorar este metodo
-    if enemy.get_position()[0] - soldier.get_position()[0] < 0 \
-            and map.get_state_position(enemy.get_next_position(Direction.RIGHT)) == 0:
+def get_shot_direction(from_soldier, to_soldier):
+    if from_soldier.get_position()[0] - to_soldier.get_position()[0] < 0 \
+            and from_soldier.get_position()[1] == to_soldier.get_position()[1]:
         return Direction.RIGHT
-    elif enemy.get_position()[0] - soldier.get_position()[0] > 0 \
-            and map.get_state_position(enemy.get_next_position(Direction.LEFT)) == 0:
+    elif from_soldier.get_position()[0] - to_soldier.get_position()[0] > 0 \
+            and from_soldier.get_position()[1] == to_soldier.get_position()[1]:
         return Direction.LEFT
-    elif enemy.get_position()[1] - soldier.get_position()[1] < 0 \
-            and map.get_state_position(enemy.get_next_position(Direction.DOWN)) == 0:
+    elif from_soldier.get_position()[1] - to_soldier.get_position()[1] < 0 \
+            and from_soldier.get_position()[0] == to_soldier.get_position()[0]:
         return Direction.DOWN
-    elif enemy.get_position()[1] - soldier.get_position()[1] > 0 \
-            and map.get_state_position(enemy.get_next_position(Direction.UP)) == 0:
+    elif from_soldier.get_position()[1] - to_soldier.get_position()[1] > 0 \
+            and from_soldier.get_position()[0] == to_soldier.get_position()[0]:
+        return Direction.UP
+    else:
+        return None
+
+
+def get_direction(from_soldier, to_soldier):
+    # TODO: mejorar este metodo
+    if from_soldier.get_position()[0] - to_soldier.get_position()[0] < 0 \
+            and map.get_state_position(from_soldier.get_next_position(Direction.RIGHT)) == 0:
+        return Direction.RIGHT
+    elif from_soldier.get_position()[0] - to_soldier.get_position()[0] > 0 \
+            and map.get_state_position(from_soldier.get_next_position(Direction.LEFT)) == 0:
+        return Direction.LEFT
+    elif from_soldier.get_position()[1] - to_soldier.get_position()[1] <= 0 \
+            and map.get_state_position(from_soldier.get_next_position(Direction.DOWN)) == 0:
+        return Direction.DOWN
+    elif from_soldier.get_position()[1] - to_soldier.get_position()[1] >= 0 \
+            and map.get_state_position(from_soldier.get_next_position(Direction.UP)) == 0:
         return Direction.UP
 
 
+def end_menu(player_is_winner):
+    while True:
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                sys.exit()
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_SPACE:
+                    start_over()
+
+        if player_is_winner:
+            fuente_game_over = pygame.font.Font(None, 100)
+            text_game_over = "YOU WIN"
+            text_game_over = fuente_game_over.render(text_game_over, 0, RED)
+        else:
+            fuente_game_over = pygame.font.Font(None, 100)
+            text_game_over = "YOU LOOSE"
+            text_game_over = fuente_game_over.render(text_game_over, 0, RED)
+
+        fuente_play_again = pygame.font.Font(None, 30)
+        text_play_again = "Press space to play again"
+        text_play_again = fuente_play_again.render(text_play_again, 0, WHITE)
+        screen.blit(text_game_over, (100, 200))
+        screen.blit(text_play_again, (200, 400))
+        pygame.display.update()
+
+
+def start_over():
+    # TODO: Resolver problemas
+    shots.clear()
+    enemies.clear()
+    players.clear()
+    impacts.clear()
+    map = Map()
+    map.generate_soldiers(players)
+    map.generate_enemies(enemies)
+    map_surface = map.get_map_surface()
+    run_game()
+
+
 def run_game():
+
 
     global turn_enemy
     game_over = False
@@ -118,17 +172,17 @@ def run_game():
 
     while not game_over:
         # Control de fps:
-        clock.tick(10)
+        clock.tick(15)
         screen.blit(map_surface, (0, 0))
         if turn_enemy:
-            enemy_move()
+            enemy_turn()
         else:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     sys.exit()
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     position = pygame.mouse.get_pos()
-                    selected_soldier = map.get_soldier_selected(position, soldiers)
+                    selected_soldier = map.get_soldier_selected(position, players)
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_LEFT and selected_soldier is not None:
                         move(selected_soldier, Direction.LEFT)
@@ -150,39 +204,49 @@ def run_game():
                         create_shot(selected_soldier, Direction.DOWN)
 
         # Dibujamos los jugadores y los enemigos
-        for soldier in soldiers:
-            if selected_soldier is not None and selected_soldier == soldier:
-                screen.blit(soldier.get_picture_selected(), (soldier.get_position()[0] * PICTURES_SIZE, soldier.get_position()[1] * PICTURES_SIZE))
-            screen.blit(soldier.get_picture(), (soldier.get_position()[0] * PICTURES_SIZE, soldier.get_position()[1] * PICTURES_SIZE))
+        for player in players:
+            if player.get_health() <= 0:
+                map.set_state_position(player.get_position(), 0)
+                players.remove(player)
+            elif selected_soldier is not None and selected_soldier == player:
+                screen.blit(player.get_picture_selected(), (player.get_position()[0] * PICTURES_SIZE, player.get_position()[1] * PICTURES_SIZE))
+            else:
+                screen.blit(player.get_picture(), (player.get_position()[0] * PICTURES_SIZE, player.get_position()[1] * PICTURES_SIZE))
 
         for enemy in enemies:
-            screen.blit(enemy.get_picture(), (enemy.get_position()[0] * PICTURES_SIZE, enemy.get_position()[1] * PICTURES_SIZE))
+            if enemy.get_health() <= 0:
+                map.set_state_position(enemy.get_position(), 0)
+                enemies.remove(enemy)
+            else:
+                screen.blit(enemy.get_picture(), (enemy.get_position()[0] * PICTURES_SIZE, enemy.get_position()[1] * PICTURES_SIZE))
 
         for shot in shots:
             # Caso 1: El disparo no ha alcanzado su maxima distancia y no ha chocado con nada
             if shot.get_max_distance() > shot.get_distance_traveled() and map.get_state_position(shot.get_next_position()) == 0:
                 shot.move_forward(1)
                 screen.blit(shot.get_picture(), (shot.get_position()[0] * PICTURES_SIZE, shot.get_position()[1] * PICTURES_SIZE))
-            # Caso 2: El disparo choca con algo (muro o enemigo) Aqui comprobamos que el disparo es certero.
-
+            # Caso 2: El disparo choca con algo (muro o enemigo)
+            # TODO, aqui no podemos comprobar si el disparo es certero(un enemigo puede dispararse a si mismo)
             elif map.get_state_position(shot.get_next_position()) == 1:
                 for enemy in enemies:
-                    if contact(shot, enemy) and random.randint(0, 100) <= selected_soldier.get_accuracy():
-                        map.set_state_position(enemy.get_position(), 0)
-                        enemies.remove(enemy)
+                    if contact(shot, enemy):
+                        enemy.set_damage(shot.get_damage())
+                for player in players:
+                    if contact(shot, player):
+                        player.set_damage(shot.get_damage())
                 create_impact(shot.get_position(), shot.get_direction())
                 shots.remove(shot)
             # Caso 3: El disparo ha alcanzao su maxima distancia
             else:
                 shots.remove(shot)
+
         if len(enemies) == 0:
-            #TODO: llamar a metodo victory
+            end_menu(True)
             game_over = True
 
-        elif len(soldiers) == 0:
-            #TODO: llamar al metodo defeated
+        elif len(players) == 0:
+            end_menu(False)
             game_over = True
-        
 
         pygame.display.update()
 
@@ -191,7 +255,7 @@ pygame.init()
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGTH))
 clock = pygame.time.Clock()
 map = Map()
-map.generate_soldiers(soldiers)
+map.generate_soldiers(players)
 map.generate_enemies(enemies)
 map_surface = map.get_map_surface()
 run_game()

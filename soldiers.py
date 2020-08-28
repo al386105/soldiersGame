@@ -10,7 +10,7 @@ class Soldier:
         self.picture = pygame.image.load(picture)
         self.picture.set_colorkey(WHITE)
         self.picture_selected = pygame.image.load(picture_selected)
-        self.heatlh = health
+        self.health = health
         self.damage = damage
         self.shooting_distance = shooting_distance
         self.accuracy = accuracy
@@ -27,8 +27,8 @@ class Soldier:
     def get_picture_selected(self):
         return self.picture_selected
 
-    def get_heatlh(self):
-        return self.heatlh
+    def get_health(self):
+        return self.health
 
     def get_damage(self):
         return self.damage
@@ -74,19 +74,19 @@ class Soldier:
             self.position[0] -= distance
         self.distance_traveled += distance
 
-    def damage(self, damage):
-        self.heatlh -= damage
+    def set_damage(self, damage):
+        self.health -= damage
 
-    def heal(self, healing):
-        self.heatlh += healing
+    def set_healing(self, healing):
+        self.health += healing
 
 
 class Infantry(Soldier):
     def __init__(self, position):
-        PICTURE = "pictures/soldier.png"
-        PICTURE_SELECTED = "pictures/soldier_selected.png"
+        PICTURE = "pictures/infantry.png"
+        PICTURE_SELECTED = "pictures/infantry_selected.png"
         HEALTH = 100
-        DAMAGE = 20
+        DAMAGE = 60
         SHOOTING_DISTANCE = 5
         ACCURACY = 60
         MAX_MOVING_DISTANCE = 10
@@ -96,10 +96,10 @@ class Infantry(Soldier):
 
 class Sniper(Soldier):
     def __init__(self, position):
-        PICTURE = "pictures/soldier.png"
-        PICTURE_SELECTED = "pictures/soldier_selected.png"
+        PICTURE = "pictures/sniper.png"
+        PICTURE_SELECTED = "pictures/sniper_selected.png"
         HEALTH = 80
-        DAMAGE = 30
+        DAMAGE = 100
         SHOOTING_DISTANCE = 30
         ACCURACY = 80
         MAX_MOVING_DISTANCE = 5
@@ -109,10 +109,10 @@ class Sniper(Soldier):
 
 class Gunner(Soldier):
     def __init__(self, position):
-        PICTURE = "pictures/soldier.png"
-        PICTURE_SELECTED = "pictures/soldier_selected.png"
+        PICTURE = "pictures/gunner.png"
+        PICTURE_SELECTED = "pictures/gunner_selected.png"
         HEALTH = 120
-        DAMAGE = 40
+        DAMAGE = 80
         SHOOTING_DISTANCE = 10
         ACCURACY = 70
         MAX_MOVING_DISTANCE = 5
@@ -122,10 +122,10 @@ class Gunner(Soldier):
 
 class Explorer(Soldier):
     def __init__(self, position):
-        PICTURE = "pictures/soldier.png"
-        PICTURE_SELECTED = "pictures/soldier_selected.png"
+        PICTURE = "pictures/explorer.png"
+        PICTURE_SELECTED = "pictures/explorer_selected.png"
         HEALTH = 80
-        DAMAGE = 15
+        DAMAGE = 40
         SHOOTING_DISTANCE = 10
         ACCURACY = 60
         MAX_MOVING_DISTANCE = 10
@@ -138,8 +138,8 @@ class Enemy(Soldier):
         PICTURE = "pictures/enemy.png"
         PICTURE_SELECTED = "pictures/enemy_selected.png"
         HEALTH = 100
-        DAMAGE = 20
-        SHOOTING_DISTANCE = 15
+        DAMAGE = 60
+        SHOOTING_DISTANCE = 5
         ACCURACY = 60
         MAX_MOVING_DISTANCE = 10
         EXPLORING_RANGE = 5
