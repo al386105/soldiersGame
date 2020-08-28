@@ -21,8 +21,10 @@ turn_enemy = False
 
 
 def move(soldier, direction):
+    distance_traveled = soldier.get_distance_traveled()
+    max_distance = soldier.get_max_moving_distance()
     next_position = soldier.get_next_position(direction)
-    if map.get_state_position(next_position) == 0:
+    if map.get_state_position(next_position) == 0 and distance_traveled < max_distance:
         map.set_state_position(soldier.get_position(), 0)
         soldier.move(1, direction)
         map.set_state_position(next_position, 1)
@@ -48,23 +50,29 @@ def create_impact(position, direction):
 
 
 def change_turn():
+    # A parte de cambiar el turno reestablecemos la distancia recorrida de los jugadores y enemigos:
     global turn_enemy
     if turn_enemy:
+        for enemy in enemies:
+            enemy.reset_distance_traveled()
         turn_enemy = False
     else:
+        for player in players:
+            player.reset_distance_traveled()
         turn_enemy = True
 
 
 def enemy_turn():
     for enemy in enemies:
-        nearest_soldier = get_nearest_player(enemy.get_position(), players)
-        if nearest_soldier is not None:
-            moving_direction = get_direction(enemy, nearest_soldier)
-            if in_range(enemy, nearest_soldier):
-                shot_direction = get_shot_direction(enemy, nearest_soldier)
-                create_shot(enemy, shot_direction)
-            else:
-                move(enemy, moving_direction)
+        for n in range (0, enemy.get_max_moving_distance()):
+            nearest_soldier = get_nearest_player(enemy.get_position(), players)
+            if nearest_soldier is not None:
+                moving_direction = get_direction(enemy, nearest_soldier)
+                if in_range(enemy, nearest_soldier):
+                    shot_direction = get_shot_direction(enemy, nearest_soldier)
+                    create_shot(enemy, shot_direction)
+                else:
+                    move(enemy, moving_direction)
     change_turn()
 
 
@@ -193,6 +201,7 @@ def run_game():
                     elif event.key == pygame.K_DOWN and selected_soldier is not None:
                         move(selected_soldier, Direction.DOWN)
                     elif event.key == pygame.K_SPACE:
+                        selected_soldier = None
                         change_turn()
                     elif event.key == pygame.K_w and selected_soldier is not None:
                         create_shot(selected_soldier, Direction.UP)
@@ -226,7 +235,6 @@ def run_game():
                 shot.move_forward(1)
                 screen.blit(shot.get_picture(), (shot.get_position()[0] * PICTURES_SIZE, shot.get_position()[1] * PICTURES_SIZE))
             # Caso 2: El disparo choca con algo (muro o enemigo)
-            # TODO, aqui no podemos comprobar si el disparo es certero(un enemigo puede dispararse a si mismo)
             elif map.get_state_position(shot.get_next_position()) == 1:
                 for enemy in enemies:
                     if contact(shot, enemy):
